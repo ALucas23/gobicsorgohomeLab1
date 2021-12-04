@@ -14,17 +14,23 @@ public class Snake extends Canvas{
     int fieldSize, screenSize;
     private GameEntity[][] field;
     private int direction;
+    private int totLength;
     public Snake(int fieldSize, int screenSize){
         super(screenSize, screenSize);
         this.fieldSize = fieldSize;
         this.screenSize = screenSize;
         this.direction = RIGHT;
+        this.totLength = 1;
         gc = this.getGraphicsContext2D();
-        create_initial_field();
-        draw_field();
+        reset();
+        drawField();
     }
 
-    public String update(char c){
+    private void reset(){
+        createInitialField();
+    }
+
+    private void updateDirection(char c){
         if (c == 'w') {
             this.direction = UP;
         } else if (c == 'a') {
@@ -34,10 +40,76 @@ public class Snake extends Canvas{
         } else if (c == 'd') {
             this.direction = RIGHT;
         }
-        return "test";
     }
 
-    private void create_initial_field(){
+    public int update(char c){
+        try {
+            updateDirection(c);
+            int[] posHead = moveSnakeTail();
+            moveSnakeHead(posHead[0], posHead[1]);
+            drawField();
+
+
+            if (isFull()) {
+                // TODO implement cool animation,
+                //  idea pop up a nwe screen with a trophy and we are the champions song
+            }
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        return 0;
+    }
+
+    private void moveSnakeHead(int hRow, int hCol){
+        int nextRow = hRow + ((this.direction == RIGHT)?1:
+                (this.direction == LEFT)?-1:0);
+        int nextCol = hCol + ((this.direction == DOWN)?1:
+                (this.direction == UP)?-1:0);
+        if(nextRow < 0 || nextCol < 0 || nextRow >= fieldSize || nextCol >= fieldSize){
+            reset();
+            return;
+        }
+        if(field[nextRow][nextCol] instanceof SnakeField){
+            reset();
+            return;
+        }
+        if(field[nextRow][nextCol] instanceof FruitField){
+            extendLife();
+            spawnFruit();
+        }
+        createSnakeField(nextRow, nextCol);
+    }
+
+    private void extendLife(){
+        this.totLength++;
+        for (int row = 0; row < this.fieldSize; row++) {
+            for (int col = 0; col < this.fieldSize; col++) {
+                if(field[row][col] instanceof SnakeField snakeField){
+                    snakeField.extendLife();
+                }
+            }
+        }
+    }
+
+    private int[] moveSnakeTail(){
+        int hRow = -1, hCol = -1;
+        for (int row = 0; row < this.fieldSize; row++) {
+            for (int col = 0; col < this.fieldSize; col++) {
+                if (field[row][col] instanceof SnakeField snakeField) {
+                    if(snakeField.isHead()){
+                        hRow = row;
+                        hCol = col;
+                    }
+                    if (!snakeField.move()) {
+                        field[row][col] = new EmptyField(row, col, this.fieldSize, this.screenSize);
+                    }
+                }
+            }
+        }
+        return new int[]{hRow, hCol};
+    }
+
+    private void createInitialField(){
         this.field = new GameEntity[this.fieldSize][this.fieldSize];
         for (int row = 0; row < this.fieldSize; row++) {
             for (int col = 0; col < this.fieldSize; col++) {
@@ -46,12 +118,17 @@ public class Snake extends Canvas{
         }
         int startRow = (int) (random()* this.fieldSize);
         int startCol = (int) (random()* this.fieldSize);
-        field[startRow][startCol] = new SnakeField(startRow, startCol, this.fieldSize, this.screenSize);
+        this.totLength = 1;
+        createSnakeField(startRow, startCol);
 
-        spawn_fruit();
+        spawnFruit();
     }
 
-    protected void spawn_fruit(){
+    private void createSnakeField(int startRow, int startCol){
+        field[startRow][startCol] = new SnakeField(startRow, startCol, this.fieldSize, this.screenSize, this.totLength);
+    }
+
+    protected void spawnFruit(){
         if(isFull()){
             return;
         }
@@ -74,7 +151,7 @@ public class Snake extends Canvas{
         return true;
     }
 
-    private void draw_field(){
+    private void drawField(){
         gc.clearRect(0, 0, screenSize, screenSize);
         for (GameEntity[] gameEntities : field) {
             for (GameEntity gameEntity : gameEntities) {

@@ -49,8 +49,11 @@ public class App extends Application {
         scene.setOnKeyTyped(e -> globalKeyPress.onNext(e.getCharacter().charAt(0)));
         globalKeyPress.subscribe(System.out::println);
 
-        globalTicker.observeOn(JavaFxScheduler.platform())
-                .withLatestFrom(globalKeyPress, (t, key) -> snake.update(key));
+        globalTicker
+                .filter(i -> i%5==0)
+                .observeOn(JavaFxScheduler.platform())
+                .withLatestFrom(globalKeyPress, (t, key) -> snake.update(key))
+                .subscribe();
 
         stage.setScene(scene);
         stage.show();
