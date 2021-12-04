@@ -1,9 +1,15 @@
+import games.snake.Snake;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 import javafx.application.Application;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -12,10 +18,45 @@ import org.pdfsam.rxjavafx.schedulers.JavaFxScheduler;
 
 import java.util.concurrent.TimeUnit;
 
+
 public class App extends Application {
+    static final long SPEED = 1000;
 
     @Override
-    public void start(Stage stage) {
+    public void start(Stage stage){
+        Snake snake = new Snake(5, 6*3+5*25);
+
+
+
+        //LAYOUT CODE IS HERE
+        BorderPane bPane = new BorderPane();
+        HBox topElems = new HBox();
+
+        ObservableList<Node> topElemsList = topElems.getChildren();
+        topElemsList.add(snake);
+
+        bPane.setTop(topElems);
+
+        Scene scene = new Scene(bPane, 640, 480);
+        //END OF LAYOUT CODE
+
+
+
+        Observable<Long> globalTicker = Observable.interval(100, TimeUnit.MILLISECONDS)
+                .map(i -> i%(24*60*60*10/SPEED));
+
+        PublishSubject<Character> globalKeyPress = PublishSubject.create();
+        scene.setOnKeyTyped(e -> globalKeyPress.onNext(e.getCharacter().charAt(0)));
+        globalKeyPress.subscribe(System.out::println);
+
+        globalTicker.observeOn(JavaFxScheduler.platform())
+                .withLatestFrom(globalKeyPress, (t, key) -> snake.update(key));
+
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public void startOg(Stage stage) {
 
         /* Observable sources from the backend */
         Observable<Integer> oddTicks = Observable
@@ -74,7 +115,8 @@ public class App extends Application {
         VBox container = new VBox();
         HBox nameWithTickBox = new HBox(nameLabel, plus, tickLabel, equals, nameWithTickLabel);
         HBox clicksBox = new HBox(button, clicksLabel);
-        container.getChildren().addAll(nameWithTickBox, clicksBox);
+        HBox snakeBox = new HBox(new Snake(5, 6*3+5*25));
+        container.getChildren().addAll(nameWithTickBox, clicksBox, snakeBox);
 
         Scene scene = new Scene(container, 640, 480);
         stage.setScene(scene);
