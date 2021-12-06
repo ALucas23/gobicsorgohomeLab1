@@ -15,6 +15,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.pdfsam.rxjavafx.observables.JavaFxObservable;
 import org.pdfsam.rxjavafx.schedulers.JavaFxScheduler;
+import timer.TimerSpawner;
 
 import java.util.concurrent.TimeUnit;
 
@@ -25,6 +26,10 @@ public class App extends Application {
     @Override
     public void start(Stage stage){
         Snake snake = new Snake(5, 6*3+5*25);
+        TimerSpawner timer = new TimerSpawner();
+        snake.requestFocus();
+        timer.getButtonObservableOnClick()
+                .subscribe(i -> System.out.println("TIMER WAS CREATED! " + i[0] + " : " + i[1] + " : " + i[2]));
 
 
 
@@ -36,6 +41,7 @@ public class App extends Application {
         topElemsList.add(snake);
 
         bPane.setTop(topElems);
+        bPane.setRight(timer);
 
         Scene scene = new Scene(bPane, 640, 480);
         //END OF LAYOUT CODE
@@ -46,7 +52,7 @@ public class App extends Application {
                 .map(i -> i%(24*60*60*10/SPEED));
 
         PublishSubject<Character> globalKeyPress = PublishSubject.create();
-        scene.setOnKeyTyped(e -> globalKeyPress.onNext(e.getCharacter().charAt(0)));
+        snake.setOnKeyTyped(e -> globalKeyPress.onNext(e.getCharacter().charAt(0)));
         globalKeyPress.subscribe(System.out::println);
 
         globalTicker
@@ -56,6 +62,8 @@ public class App extends Application {
                 .subscribe();
 
         stage.setScene(scene);
+        stage.setTitle("Uni-LU Dashboard");
+        stage.setResizable(false);
         stage.show();
     }
 

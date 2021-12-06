@@ -22,6 +22,7 @@ public class Snake extends Canvas{
         this.direction = RIGHT;
         this.totLength = 1;
         gc = this.getGraphicsContext2D();
+        this.setOnMousePressed(e -> this.requestFocus());
         reset();
         drawField();
     }
@@ -43,6 +44,9 @@ public class Snake extends Canvas{
     }
 
     public int update(char c){
+        if(!this.isFocused()) {
+            return 0;
+        }
         try {
             updateDirection(c);
             int[] posHead = moveSnakeTail();
