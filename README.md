@@ -2,11 +2,12 @@
 Reactive Programming project for BAINFOR17.
 
 ## HOW TO USE
-* just type mvn clean javafx:run
+* make sure that java 17 is used to test the code
+* just type `mvn clean javafx:run` in order to execute
 
 ## Structure
 * `pom.xml` contains the dependencies and project definition.
-* `src/main/java/App` contains an example Application using `JavaFX`, `RxJava` and `RxJavaFX` to display reactive data.
+* `src/main/java/App` contains the Main class
 
 ## Run
 `mvn clean javafx:run`

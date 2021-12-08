@@ -3,7 +3,6 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -24,11 +23,10 @@ import org.pdfsam.rxjavafx.schedulers.JavaFxScheduler;
 import timer.TimerSpawner;
 import timer.TimerWindow;
 
-import javax.swing.text.StyledEditorKit;
 import java.awt.*;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -48,14 +46,6 @@ public class App extends Application {
         Snake snake = new Snake(5, 6*3+5*35);
         TimerSpawner timer = new TimerSpawner();
         snake.requestFocus();
-
-
-
-        //Current Time
-        Label time = new Label();
-        time.setTextFill(Color.web("#CCCCCC", 1));
-        showCurrentTime(time);
-        time.setId("time");
 
 
         //Changing TextLabel + ImageView
@@ -104,6 +94,25 @@ public class App extends Application {
             }
         });
 
+        //Display Time as Observable
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss a");
+
+        Observable<String> currentTimeDisplay = Observable
+                .interval( 1 , TimeUnit.SECONDS)
+                .map(now -> LocalDateTime.now() )
+                .map(now -> now.format(dateTimeFormatter) ) ;
+
+        Label timecurrent = new Label();
+        timecurrent.setId("time");
+        timecurrent.setTextFill(Color.web("#CCCCCC", 1));
+
+        currentTimeDisplay
+                .observeOn(JavaFxScheduler.platform()) // Updates of the UI need to be done on the JavaFX thread
+                .subscribe(timecurrent::setText);
+
+        HBox timeBox = new HBox();
+        timeBox.getChildren().add(timecurrent);
+
         //VBox for textImage
         VBox textImageVBox = new VBox();
         textImageVBox.getChildren().addAll(imageView, changeString);
@@ -151,7 +160,7 @@ public class App extends Application {
         HBox bottomBox = new HBox();
         HBox leftBottom = new HBox();
         HBox rightBottom = new HBox();
-        leftBottom.getChildren().add(time);
+        leftBottom.getChildren().add(timeBox);
         rightBottom.getChildren().add(timer);
 
         leftBottom.setAlignment(Pos.CENTER_LEFT);
@@ -248,65 +257,6 @@ public class App extends Application {
 
     private void playSound(){
         Toolkit.getDefaultToolkit().beep();
-    }
-
-    //Show CurrentTime Method
-    private static void showCurrentTime(Label time) {
-        Thread thread = new Thread(() -> {
-            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss::aa");
-            while (true) {
-                try {
-                    // 1000 milisec = 1 sec
-                    //Using sleep, we need to put the code in a try/catch
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        Calendar calendar = Calendar.getInstance();
-
-                        String hour = "";
-                        String minute = "";
-                        String second = "";
-
-                        int hh = calendar.get(Calendar.HOUR);
-                        int mm = calendar.get(Calendar.MINUTE);
-                        int ss = calendar.get(Calendar.SECOND);
-                        int aa = calendar.get(Calendar.AM_PM);
-
-                        if (hh < 10) {
-                            hour = "0" + hh;
-                        } else {
-                            hour = String.valueOf(hh);
-                        }
-
-
-                        if (mm < 10) {
-                            minute = "0" + mm;
-                        } else  {
-                            minute = String.valueOf(mm);
-                        }
-                        if (ss < 10) {
-                            second = "0" + ss;
-                        } else  {
-                            second = String.valueOf(ss);
-                        }
-
-                        String ampm = "";
-                        if (aa == 0) {
-                            ampm = "AM";
-                        } else {
-                            ampm = "PM";
-                        }
-                        time.setText(hour + ":" + minute + ":" + second + " " + ampm);
-                    }
-                });
-            }
-        });
-        thread.start();
     }
 
     public static void main(String ... args) {
