@@ -1,0 +1,13 @@
+#label{
+    -fx-font-size: 30px;
+    -fx-background-color: rgba(0, 0, 0, 0);
+}
+
+#button{
+    -fx-background-color: rgba(0, 0, 0, 0.1);
+    -fx-border-color: rgba(0, 0, 0, 0);
+}
+
+#mainWindow{
+    -fx-background-color: #FFFFFF;
+}

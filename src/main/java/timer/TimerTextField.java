@@ -10,6 +10,7 @@ public class TimerTextField extends TextField {
     String timeFrame;
     public TimerTextField(String s, String timeFrame){
         super(s);
+        this.setId("timerTextField");
         this.timeFrame = timeFrame;
         this.setMaxWidth(30);
         this.setTextFormatter(new TextFormatter<String>(forceTwoInts));

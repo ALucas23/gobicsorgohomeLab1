@@ -1,0 +1,52 @@
+
+
+#bigTitle{
+    -fx-background-color: #EEEEEE;
+    -fx-font-size: 20px;
+     -fx-border-width: 2px 2px 2px 2px;
+     -fx-border-radius: 20px;
+     -fx-background-radius: 20px;
+     -fx-border-style: solid;
+}
+
+#smallTitle{
+    -fx-font-size: 20px;
+
+}
+
+
+#pane{
+    -fx-background-image: url("SpaceShuttle.png");
+     -fx-background-size: 750 464;
+
+}
+
+#time{
+    -fx-font-size: 20px;
+    -fx-border-width: 2px 2px 2px 2px;
+    -fx-border-radius: 0px;
+    -fx-background-color: #406172;
+    -fx-border-color: #364147;
+    -fx-background-radius: 0px;
+    -fx-border-style: solid;
+}
+
+#changeString{
+    -fx-font-size: 16px;
+}
+
+#imageView{
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+}
+
+#timerTextField{
+    -fx-background-color: rgba(0, 0, 0, 0.1);
+    -fx-border-color: rgba(0, 0, 0, 0);
+    -fx-text-fill: #CCCCCC;
+}
+
+timerButton{
+    -fx-background-color: rgba(204, 204, 204, 1);
+    -fx-border-color: rgba(0, 0, 0, 0);
+    -fx-text-fill: #333333;
+}

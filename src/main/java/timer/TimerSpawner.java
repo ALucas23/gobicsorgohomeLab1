@@ -30,6 +30,7 @@ public class TimerSpawner extends HBox {
         this.secsText = new TimerTextField("00", "secs");
         elems.add(secsText);
         Button button = new Button("Start Timer");
+        button.setId("timerButton");
         elems.add(button);
 
         buttonObservable = JavaFxObservable.actionEventsOf(button);
