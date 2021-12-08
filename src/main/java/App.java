@@ -60,7 +60,7 @@ public class App extends Application {
         changeString.setTextFill(Color.web("#CCCCCC", 1));
 
         nameObservable
-                .observeOn(JavaFxScheduler.platform()) // Updates of the UI need to be done on the JavaFX thread
+                .observeOn(JavaFxScheduler.platform())
                 .subscribe(changeString::setText);
 
         ImageView imageView = new ImageView();
@@ -107,7 +107,7 @@ public class App extends Application {
         timecurrent.setTextFill(Color.web("#CCCCCC", 1));
 
         currentTimeDisplay
-                .observeOn(JavaFxScheduler.platform()) // Updates of the UI need to be done on the JavaFX thread
+                .observeOn(JavaFxScheduler.platform())
                 .subscribe(timecurrent::setText);
 
         HBox timeBox = new HBox();
@@ -207,7 +207,7 @@ public class App extends Application {
 
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getClassLoader().getResource("stylesheet.css")).toExternalForm());
         stage.setScene(scene);
-        stage.setTitle("Uni-LU Dashboard");
+        stage.setTitle("pasta maker 3000");
         stage.setResizable(false);
         stage.show();
     }

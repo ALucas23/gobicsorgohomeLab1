@@ -59,6 +59,7 @@ public class TimerWindow extends Stage {
                 .observeOn(JavaFxScheduler.platform())
                 .subscribe(b -> {
                     if(b) {
+                        this.setTitle("Pasta is ready!");
                         this.setAlwaysOnTop(true);
                         this.setAlwaysOnTop(false);
                     }
