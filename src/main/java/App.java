@@ -47,6 +47,10 @@ public class App extends Application {
         TimerSpawner timer = new TimerSpawner();
         snake.requestFocus();
 
+        ImageView imageView = new ImageView();
+        imageView.setId("imageView");
+        imageView.setFitWidth(200);
+        imageView.setFitHeight(200);
 
         //Changing TextLabel + ImageView
         final String[] names = {"PF3's gonna be very funny.", "Florian: I'm a Hackerman.", "JavaFX UI Implementation = Magic", "I love Ocaml.", "Re-explain everything starting from PF2?", "So did I pass Lab1?"};
@@ -54,6 +58,10 @@ public class App extends Application {
                 .interval(2, TimeUnit.SECONDS)
                 .map(Long::intValue)
                 .map(i -> names[i % names.length]);
+
+        nameObservable
+                .observeOn(JavaFxScheduler.platform())
+                .subscribe(s -> updateImage(s, imageView));
 
         Label changeString = new Label();
         changeString.setId("changeString");
@@ -63,36 +71,6 @@ public class App extends Application {
                 .observeOn(JavaFxScheduler.platform())
                 .subscribe(changeString::setText);
 
-        ImageView imageView = new ImageView();
-        imageView.setId("imageView");
-        imageView.setFitWidth(200);
-        imageView.setFitHeight(200);
-
-
-        changeString.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-                if (Objects.equals(changeString.getText(), "PF3's gonna be very funny.")) {
-                    Image image = new Image("Funny.png");
-                    imageView.setImage(image);
-                } else if (Objects.equals(changeString.getText(), "Florian: I'm a Hackerman.")){
-                    Image image = new Image("Hackerman.png");
-                    imageView.setImage(image);
-                } else if (Objects.equals(changeString.getText(), "JavaFX UI Implementation = Magic")){
-                    Image image = new Image("Magic.png");
-                    imageView.setImage(image);
-                }else if (Objects.equals(changeString.getText(), "I love Ocaml.")){
-                    Image image = new Image("Pierre.png");
-                    imageView.setImage(image);
-                }else if (Objects.equals(changeString.getText(), "Re-explain everything starting from PF2?")) {
-                    Image image = new Image("Questions.png");
-                    imageView.setImage(image);
-                } else {
-                    Image image = new Image("BelugaJR.png");
-                    imageView.setImage(image);
-                }
-            }
-        });
 
         //Display Time as Observable
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss a");
@@ -194,8 +172,8 @@ public class App extends Application {
         globalTicker
                 .filter(i -> i%50==0)
                 .observeOn(JavaFxScheduler.platform())
-                .withLatestFrom(globalKeyPress, (t, key) -> snake.update(key))
-                .subscribe();
+                .withLatestFrom(globalKeyPress, (t, key) -> key)
+                .subscribe(snake::update);
 
 
         timer.getButtonObservableOnClick()
@@ -210,6 +188,28 @@ public class App extends Application {
         stage.setTitle("pasta maker 3000");
         stage.setResizable(false);
         stage.show();
+    }
+
+    private void updateImage(String s, ImageView imageView){
+        if (Objects.equals(s, "PF3's gonna be very funny.")) {
+            Image image = new Image("Funny.png");
+            imageView.setImage(image);
+        } else if (Objects.equals(s, "Florian: I'm a Hackerman.")){
+            Image image = new Image("Hackerman.png");
+            imageView.setImage(image);
+        } else if (Objects.equals(s, "JavaFX UI Implementation = Magic")){
+            Image image = new Image("Magic.png");
+            imageView.setImage(image);
+        }else if (Objects.equals(s, "I love Ocaml.")){
+            Image image = new Image("Pierre.png");
+            imageView.setImage(image);
+        }else if (Objects.equals(s, "Re-explain everything starting from PF2?")) {
+            Image image = new Image("Questions.png");
+            imageView.setImage(image);
+        } else {
+            Image image = new Image("BelugaJR.png");
+            imageView.setImage(image);
+        }
     }
 
     private Disposable disposable;
