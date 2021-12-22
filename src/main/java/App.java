@@ -1,6 +1,7 @@
 import games.snake.Snake;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -19,6 +20,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import music.Music;
+import music.MusicFetcher;
 import org.pdfsam.rxjavafx.schedulers.JavaFxScheduler;
 import timer.TimerSpawner;
 import timer.TimerWindow;
@@ -72,6 +75,10 @@ public class App extends Application {
                 .subscribe(changeString::setText);
 
 
+        MusicFetcher music = new MusicFetcher();
+        music.getGenreObservable().subscribe(System.out::println);
+        music.getMusicObservable().subscribe(Music::play);
+        music.getMusicAccordingToMoodObservable().subscribe(Music::play);
         //Display Time as Observable
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss a");
 
